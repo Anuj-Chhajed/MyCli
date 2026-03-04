@@ -1,68 +1,84 @@
 #!/usr/bin/env node
-const {Command} = require("commander")
-const axios = require("axios")
+
+import { Command } from "commander"
+import { MathCommands } from "./commands/MathCommands"
+import { ApiCommands } from "./commands/ApiCommands"
+import { UtilityCommands } from "./commands/UtilityCommands"
 
 const program = new Command()
 
-program.command("greet <name>")
+const math = new MathCommands()
+const api = new ApiCommands()
+const util = new UtilityCommands()
+
+program
+.name("devcli")
+.description("Custom CLI tool built with Node + TypeScript")
+.version("1.0.0")
+
+program
+.command("greet <name>")
 .description("Greeting")
-.action((name) => {
-    console.log(`Hello ${name}`)
-})
+.action((name) => util.greet(name))
 
-program.command("add <num1> <num2>")
+program
+.command("add <num1> <num2>")
 .description("Add two numbers")
-.action((num1, num2) => {
-    console.log(Number(num1)+Number(num2))
-})
+.action((a,b) => math.add(a,b))
 
-program.command("sub <num1> <num2>")
+program
+.command("sub <num1> <num2>")
 .description("Subtract two numbers")
-.action((num1, num2) => {
-    console.log(Number(num1)-Number(num2))
-})
+.action((a,b) => math.sub(a,b))
 
-program.command("mul <num1> <num2>")
+program
+.command("mul <num1> <num2>")
 .description("Multiply two numbers")
-.action((num1, num2) => {
-    console.log(Number(num1)*Number(num2))
-})
+.action((a,b) => math.mul(a,b))
 
-program.command("div <num1> <num2>")
+program
+.command("div <num1> <num2>")
 .description("Divide two numbers")
-.action((num1, num2) => {
-    if (Number(num2) === 0){
-        console.log("Error: Division By Zero!")
-    }
-    else{
-        console.log(Number(num1)/Number(num2))
-    }
-})
+.action((a,b) => math.div(a,b))
 
-program.command("joke")
+program
+.command("joke")
 .description("Random Joke")
-.action(async () => {
-    try{
-        const res = await axios.get("https://official-joke-api.appspot.com/random_joke")
-        console.log(res.data.setup)
-        console.log(res.data.punchline)
-    }
-    catch(err){
-        console.log(err)
-    }
-})
+.action(() => api.joke())
 
-program.command("quote")
+program
+.command("quote")
 .description("Random Quote")
-.action(async () => {
-    try{
-        const res = await axios.get("https://zenquotes.io/api/random")
-        console.log(res.data[0].q)
-        console.log(`By: ${res.data[0].a}`)
-    }
-    catch(err){
-        console.log(err)
-    }
-})
+.action(() => api.quote())
+
+program
+.command("github <username>")
+.description("GitHub user info")
+.action((u) => api.github(u))
+
+program
+.command("weather <city>")
+.description("Weather of city")
+.action((c) => api.weather(c))
+
+program
+.command("fact")
+.description("Random fact")
+.action(() => api.fact())
+
+program
+.command("fileinfo <filename>")
+.description("Get file info")
+.action((f) => util.fileInfo(f))
+
+program
+.command("time")
+.description("Current time")
+.action(() => util.time())
+
+program
+.command("random")
+.description("Random number")
+.action(() => util.random())
 
 program.parse()
